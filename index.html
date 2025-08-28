@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronograma de Estudos Interativo - Foco UECE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy & Calm Tones -->
+    <!-- Application Structure Plan: Retained the single-page dashboard but significantly improved the UI/UX. The navigation is now a full-width, wrapping horizontal bar for better accessibility on all screen sizes. The core improvement is the addition of a dynamic progress bar for each week. This structure enhances user motivation by providing immediate visual feedback on their progress, making the long-term plan feel more manageable and rewarding. -->
+    <!-- Visualization & Content Choices: Report Info: Daily study tasks -> Goal: Organize, Track & Motivate -> Presentation: Redesigned interactive cards with icons and a weekly progress bar -> Interaction: Checking tasks updates the progress bar and card UI; clicking the nav scrolls to the week -> Justification: The progress bar is a key data visualization element that represents completion percentage, turning abstract task completion into a tangible metric. This, combined with icons, makes the interface more intuitive and engaging. Method: Structured HTML/CSS with vanilla JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #FBF9F6;
+            color: #5D4037;
+        }
+        .task-checkbox:checked + .task-label {
+            text-decoration: line-through;
+            color: #A1887F;
+        }
+        .nav-button.active {
+            background-color: #8D6E63;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(251, 249, 246, 0.85);
+            backdrop-filter: blur(8px);
+        }
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+        }
+        .card-enter {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="text-center p-8 md:p-12 bg-cover bg-center" style="background-color: #EFEBE9;">
+        <h1 class="text-4xl md:text-5xl font-bold text-[#4E342E]">Plano de Estudos</h1>
+        <p class="text-lg text-[#6D4C41] mt-2">Seu cronograma interativo de 16 semanas.</p>
+    </header>
+
+    <nav class="sticky-nav shadow-md py-3">
+        <div id="nav-container" class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-2">
+            <!-- Navigation buttons will be inserted here by JS -->
+        </div>
+    </nav>
+
+    <main id="schedule-container" class="max-w-7xl mx-auto p-4 md:p-8">
+        <!-- Schedule content will be inserted here by JS -->
+    </main>
+
+    <footer class="text-center p-6 mt-8 bg-[#EFEBE9] text-[#6D4C41] text-sm">
+        <p>Desenvolvido para otimizar sua preparação. Bons estudos!</p>
+    </footer>
+
+    <script>
+        const scheduleData = [
+            // Semana 1
+            {
+                week: 1,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🔢", focus: "Matemática & Física", content: "<b>Matemática:</b> As 4 Operações, Expressões Numéricas e Frações.<br><b>Física:</b> Proporção entre Grandezas Físicas, Potência de 10." },
+                    { day: "Terça", icon: "🧪", focus: "Química & Biologia", content: "<b>Química:</b> Separação de Misturas.<br><b>Biologia:</b> Glicídios, Lipídios e Proteínas (Bioquímica)." },
+                    { day: "Quarta", icon: "🏛️", focus: "História & Geografia", content: "<b>História:</b> Pré-História, Mesopotâmia e Egito.<br><b>Geografia:</b> Movimentos da Terra, Coordenadas e Projeções." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Hífen.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 2
+            {
+                week: 2,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🏎️", focus: "Matemática & Física", content: "<b>Matemática:</b> Produtos Notáveis e Fatoração.<br><b>Física:</b> Cinemática: Fundamentos, Velocidade e Aceleração." },
+                    { day: "Terça", icon: "⚛️", focus: "Química & Biologia", content: "<b>Química:</b> Tabela Periódica e Ligações Químicas.<br><b>Biologia:</b> RNA, Código Genético e Biotecnologia." },
+                    { day: "Quarta", icon: "📜", focus: "História & Geografia", content: "<b>História:</b> Colonização Francesa e Governo Geral.<br><b>Geografia:</b> Climatologia." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Processos de Formação das Palavras.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 3
+            {
+                week: 3,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "📈", focus: "Matemática & Física", content: "<b>Matemática:</b> Critérios de Divisibilidade, Números Primos.<br><b>Física:</b> Movimento Uniformemente Variado." },
+                    { day: "Terça", icon: "🔬", focus: "Química & Biologia", content: "<b>Química:</b> Forças Intermoleculares e Oxirredução.<br><b>Biologia:</b> Citoplasma, Fermentação e Respiração Aeróbica." },
+                    { day: "Quarta", icon: "⚖️", focus: "História & Geografia", content: "<b>História:</b> Período Pombalino.<br><b>Geografia:</b> Estrutura Interna da Terra, Eras Geológicas." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Substantivo e Adjetivo.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 4
+            {
+                week: 4,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "➗", focus: "Matemática & Física", content: "<b>Matemática:</b> Razão e Proporção.<br><b>Física:</b> Movimentos Verticais e Vetores." },
+                    { day: "Terça", icon: "🧬", focus: "Química & Biologia", content: "<b>Química:</b> Funções Inorgânicas: Ácidos, Bases e Sais.<br><b>Biologia:</b> Ciclo Celular (Mitose e Meiose)." },
+                    { day: "Quarta", icon: "👑", focus: "História & Geografia", content: "<b>História:</b> Período Joanino.<br><b>Geografia:</b> Hidrosfera." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Pronomes.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 5
+            {
+                week: 5,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🍎", focus: "Matemática & Física", content: "<b>Matemática:</b> Porcentagem.<br><b>Física:</b> Leis de Newton, Forças." },
+                    { day: "Terça", icon: "⚖️", focus: "Química & Biologia", content: "<b>Química:</b> Cálculo Estequiométrico.<br><b>Biologia:</b> Embriologia." },
+                    { day: "Quarta", icon: "🏛️", focus: "História & Geografia", content: "<b>História:</b> Primeiro Reinado.<br><b>Geografia:</b> Conferências Ambientais." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Pronomes demonstrativos.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "�", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 6
+            {
+                week: 6,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "⚙️", focus: "Matemática & Física", content: "<b>Matemática:</b> Conjuntos.<br><b>Física:</b> Força de Atrito, Plano Inclinado." },
+                    { day: "Terça", icon: "🩸", focus: "Química & Biologia", content: "<b>Química:</b> Dispersões e Soluções.<br><b>Biologia:</b> Histologia Animal." },
+                    { day: "Quarta", icon: "👑", focus: "História & Geografia", content: "<b>História:</b> Segundo Reinado.<br><b>Geografia:</b> Demografia (Pirâmide Etária, PEA, IDH)." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Verbos.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 7
+            {
+                week: 7,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🌌", focus: "Matemática & Física", content: "<b>Matemática:</b> Progressão Geométrica (PG).<br><b>Física:</b> Leis de Kepler e Gravitação." },
+                    { day: "Terça", icon: "🔥", focus: "Química & Biologia", content: "<b>Química:</b> Termoquímica.<br><b>Biologia:</b> Fisiologia Animal (Sistemas Sensorial, Endócrino, Respiratório)." },
+                    { day: "Quarta", icon: "🏰", focus: "História & Geografia", content: "<b>História:</b> Revoluções Inglesas.<br><b>Geografia:</b> Demografia (Migrações)." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Conjunções.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 8
+            {
+                week: 8,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "📐", focus: "Matemática & Física", content: "<b>Matemática:</b> Geometria Plana: Polígonos e Círculo.<br><b>Física:</b> Estática: Momento de uma Força." },
+                    { day: "Terça", icon: "🔄", focus: "Química & Biologia", content: "<b>Química:</b> Equilíbrio Químico.<br><b>Biologia:</b> Fisiologia Animal (Sistemas Digestório e Excretor)." },
+                    { day: "Quarta", icon: "🏛️", focus: "História & Geografia", content: "<b>História:</b> Primeira República (Rodrigues Alves).<br><b>Geografia:</b> Geografia Urbana e Agrária." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Colocação Pronominal.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 9
+            {
+                week: 9,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🧊", focus: "Matemática & Física", content: "<b>Matemática:</b> Geometria Espacial: Prismas e Cilindro.<br><b>Física:</b> Termologia: Escalas e Dilatação." },
+                    { day: "Terça", icon: "🌿", focus: "Química & Biologia", content: "<b>Química:</b> Hidrólise e Solução Tampão.<br><b>Biologia:</b> Genética: 2ª Lei de Mendel." },
+                    { day: "Quarta", icon: "💡", focus: "História & Geografia", content: "<b>História:</b> Primeira República (Venceslau Brás).<br><b>Geografia:</b> Fontes de Energia." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Regência Verbal.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 10
+            {
+                week: 10,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "💨", focus: "Matemática & Física", content: "<b>Matemática:</b> Estatística.<br><b>Física:</b> Gases e Termodinâmica." },
+                    { day: "Terça", icon: "🐒", focus: "Química & Biologia", content: "<b>Química:</b> Eletroquímica: Eletrólise.<br><b>Biologia:</b> Teorias Evolutivas." },
+                    { day: "Quarta", icon: "🇧🇷", focus: "História & Geografia", content: "<b>História:</b> Era Vargas.<br><b>Geografia:</b> Globalização e DIT." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Sujeito e Predicado.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 11
+            {
+                week: 11,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🎲", focus: "Matemática & Física", content: "<b>Matemática:</b> Análise Combinatória.<br><b>Física:</b> Ondulatória e MHS." },
+                    { day: "Terça", icon: "🐧", focus: "Química & Biologia", content: "<b>Química:</b> Química Orgânica: Introdução.<br><b>Biologia:</b> Evolução Humana e Taxonomia." },
+                    { day: "Quarta", icon: "🏭", focus: "História & Geografia", content: "<b>História:</b> Era Vargas: Estado Novo.<br><b>Geografia:</b> Globalização e Comércio." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Complementos Verbais e Nominais.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 12
+            {
+                week: 12,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "💡", focus: "Matemática & Física", content: "<b>Matemática:</b> Probabilidade.<br><b>Física:</b> Óptica: Refração e Prismas." },
+                    { day: "Terça", icon: "🦠", focus: "Química & Biologia", content: "<b>Química:</b> Funções Orgânicas Oxigenadas.<br><b>Biologia:</b> Microbiologia e Parasitologia." },
+                    { day: "Quarta", icon: "🗳️", focus: "História & Geografia", content: "<b>História:</b> República Populista: Getúlio Vargas.<br><b>Geografia:</b> Regionalização da América." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Concordância Nominal.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 13
+            {
+                week: 13,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "⚡", focus: "Matemática & Física", content: "<b>Matemática:</b> Função Afim (1º Grau).<br><b>Física:</b> Eletrostática: Carga e Lei de Coulomb." },
+                    { day: "Terça", icon: "🌱", focus: "Química & Biologia", content: "<b>Química:</b> Propriedades dos Compostos Orgânicos.<br><b>Biologia:</b> Botânica: Fisiologia Vegetal." },
+                    { day: "Quarta", icon: "🌍", focus: "História & Geografia", content: "<b>História:</b> República Populista: Jânio Quadros.<br><b>Geografia:</b> Europa: Aspectos Físicos." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Período Composto por Coordenação.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 14
+            {
+                week: 14,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🔋", focus: "Matemática & Física", content: "<b>Matemática:</b> Função Quadrática (2º Grau).<br><b>Física:</b> Eletrostática: Energia e Capacitores." },
+                    { day: "Terça", icon: "🦋", focus: "Química & Biologia", content: "<b>Química:</b> Radioatividade.<br><b>Biologia:</b> Zoologia: Filos." },
+                    { day: "Quarta", icon: "🎖️", focus: "História & Geografia", content: "<b>História:</b> Ditadura Militar: Castelo Branco.<br><b>Geografia:</b> África." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Período Composto por Subordinação.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 15
+            {
+                week: 15,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "💡", focus: "Matemática & Física", content: "<b>Matemática:</b> Função Exponencial.<br><b>Física:</b> Circuitos Elétricos." },
+                    { day: "Terça", icon: "🌳", focus: "Química & Biologia", content: "<b>Química:</b> Reações Orgânicas.<br><b>Biologia:</b> Ecologia: Populações e Relações." },
+                    { day: "Quarta", icon: "🕊️", focus: "História & Geografia", content: "<b>História:</b> Guerra Fria e Descolonização.<br><b>Geografia:</b> Oriente Médio (Geopolítica)." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Pontuação: Vírgula.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🧠", focus: "Revisão", content: "Revisar os tópicos da semana e refazer as questões com dificuldade." }
+                ]
+            },
+            // Semana 16
+            {
+                week: 16,
+                intro: "",
+                days: [
+                    { day: "Segunda", icon: "🗺️", focus: "Matemática & Física", content: "<b>Matemática:</b> Geometria Analítica.<br><b>Física:</b> Eletromagnetismo." },
+                    { day: "Terça", icon: "♻️", focus: "Química & Biologia", content: "<b>Química:</b> Polímeros.<br><b>Biologia:</b> Desequilíbrios Ecológicos e Poluição." },
+                    { day: "Quarta", icon: "🗳️", focus: "História & Geografia", content: "<b>História:</b> Nova República.<br><b>Geografia:</b> Conflitos e Regiões Polares." },
+                    { day: "Quinta", icon: "✍️", focus: "Português & Exercícios", content: "<b>Português:</b> Outros Sinais de Pontuação.<br><b>Exercícios:</b> Praticar Matemática e Física na Apostila UECE." },
+                    { day: "Sexta", icon: "🎯", focus: "Exercícios", content: "Praticar Química, Biologia, História, Geografia e Português na Apostila UECE." },
+                    { day: "Sáb/Dom", icon: "🏁", focus: "Revisão Geral", content: "Revisão final de todos os tópicos e simulados." }
+                ]
+            }
+        ];
+
+        const STORAGE_KEY = 'cronogramaUeceProgresso';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const navContainer = document.getElementById('nav-container');
+            const scheduleContainer = document.getElementById('schedule-container');
+
+            // Function to save progress to localStorage
+            function saveProgress() {
+                const progress = {};
+                document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                    progress[checkbox.id] = checkbox.checked;
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+            }
+
+            // Function to load progress from localStorage
+            function loadProgress() {
+                const savedProgress = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (savedProgress) {
+                    Object.keys(savedProgress).forEach(taskId => {
+                        const checkbox = document.getElementById(taskId);
+                        if (checkbox) {
+                            checkbox.checked = savedProgress[taskId];
+                        }
+                    });
+                }
+            }
+
+            // Build the schedule HTML
+            scheduleData.forEach(weekData => {
+                const navButton = document.createElement('a');
+                navButton.href = `#semana-${weekData.week}`;
+                navButton.textContent = `Semana ${weekData.week}`;
+                navButton.className = 'nav-button flex-shrink-0 px-3 py-1.5 text-sm font-medium text-[#6D4C41] bg-white rounded-full shadow-sm hover:bg-[#D7CCC8] transition-all duration-200';
+                navContainer.appendChild(navButton);
+
+                let weekHTML = `
+                    <section id="semana-${weekData.week}" class="mb-16">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-[#4E342E]">Semana ${weekData.week}</h2>
+                            <p class="text-gray-600 mt-1 max-w-2xl mx-auto">${weekData.intro}</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-8">
+                            <div id="progress-${weekData.week}" class="progress-bar-fill bg-gradient-to-r from-[#A1887F] to-[#8D6E63] h-2.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                `;
+
+                weekData.days.forEach((dayData, index) => {
+                    const taskId = `task-${weekData.week}-${index}`;
+                    weekHTML += `
+                        <div class="card-enter bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-5 flex flex-col" style="animation-delay: ${index * 100}ms;">
+                           <div class="flex items-center mb-3">
+                                <span class="text-2xl mr-3">${dayData.icon}</span>
+                                <div>
+                                    <h3 class="font-bold text-lg text-[#5D4037]">${dayData.day}</h3>
+                                    <p class="text-sm text-gray-500">${dayData.focus}</p>
+                                </div>
+                           </div>
+                           <div class="flex items-start space-x-3 mt-2 flex-grow">
+                                <input type="checkbox" id="${taskId}" data-week="${weekData.week}" class="task-checkbox mt-1 h-4 w-4 rounded border-gray-300 text-[#8D6E63] focus:ring-[#8D6E63]">
+                                <label for="${taskId}" class="task-label text-gray-700 text-sm flex-1">${dayData.content}</label>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                weekHTML += `</div></section>`;
+                scheduleContainer.innerHTML += weekHTML;
+            });
+            
+            function updateProgress(weekNumber) {
+                const checkboxes = document.querySelectorAll(`.task-checkbox[data-week='${weekNumber}']`);
+                const progressBar = document.getElementById(`progress-${weekNumber}`);
+                if (!checkboxes.length || !progressBar) return;
+
+                const totalTasks = checkboxes.length;
+                let completedTasks = 0;
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        completedTasks++;
+                    }
+                });
+                const percentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+                progressBar.style.width = `${percentage}%`;
+            }
+
+            // Load saved progress first
+            loadProgress();
+
+            // Initial progress bar update for all weeks
+            scheduleData.forEach(weekData => {
+                updateProgress(weekData.week);
+            });
+
+            // Add event listeners to checkboxes to update progress and save
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (event) => {
+                    const weekNumber = event.target.dataset.week;
+                    updateProgress(weekNumber);
+                    saveProgress(); // Save on every change
+                });
+            });
+
+            // Navigation observer
+            const sections = document.querySelectorAll('section');
+            const navButtons = document.querySelectorAll('.nav-button');
+            const observerOptions = { root: null, rootMargin: '-40% 0px -60% 0px', threshold: 0 };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navButtons.forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.getAttribute('href').substring(1) === entry.target.id) {
+                                btn.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
+�
